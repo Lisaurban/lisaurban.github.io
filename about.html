@@ -5,13 +5,38 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://storage.googleapis.com/feednami-static/js/feednami-client-v1.0.1.js"></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+<script>
+
     <script>
       window.onload = function() {
         // functions that run after page loads
         displayGreeting();
         fetchWeather(85719);
         function displayRSSFeed();
+        var mymap = drawMap();
+        listSheet(mymap);
       }
+      function drawMap() {
+   // draw a map using leafletjs and tiles from mapbox
+   var mymap = L.map('mapid').setView([32.2264836, -110.9498551], 12);
+   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+       maxZoom: 18,
+       id: 'mapbox/streets-v11',
+       tileSize: 512,
+       zoomOffset: -1,
+       accessToken: 'pk.eyJ1IjoibGF1cmVucm93ZTgyNiIsImEiOiJja2cxZmNicm4wMDIwMnBteDc3NDNhN2NxIn0.3zTcMBYeqX_5cWTMw-xFvA'
+   }).addTo(mymap);
+   return mymap;
+ }
+
+ function addPin(mymap, lat, lon, name) {
+ // add a pin to mymap at lat, lon with a popup
+ L.marker([lat, lon]).addTo(mymap).bindPopup(name);
+}
       // display good morning, afternoon or evening based on the time
       function displayGreeting() {
         var date = new Date();
@@ -37,6 +62,30 @@
           document.getElementById("weather").innerHTML = "Error in fetch Weather function";
         });
       }
+      function listSheet(mymap) {
+            // list google sheet rows
+                fetch('https://api.sheetson.com/v2/sheets/Sheet1', {
+                  withCredentials: true,
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer yhlqlTHe_P-iim2XsIcSsKymph2sCxbx960ISNkpapPkZ9nHWgbF_9HwWF870A',
+                    'X-Sheetson-Spreadsheet-Id': '5_Ya_xFF03VEEVzXa4nsrY3efJ3aHFA9k7PCQ7jOPBM'
+                  }
+                })
+                .then(function(resp) { return resp.json() })
+                .then(function(data) {
+                  for (var i = 0; i < data.results.length; i++) {
+                    var result = data.results[i];
+                    let divElement = '<div class="cell">' + '<div class="cell_name">' + result.name + '</div>' + '<div class="cell_address">' + result.address + '</div>' + '<div class="cell_url"><a href="' + result.url + '">' + result.url + '</a></div>' + '<div class="cell_phone">' + result.phone + '</div>' + '</div>';
+                    document.getElementById("sheet").innerHTML += divElement;
+
+                    addPin(mymap, result.lat, result.lon, '<strong>' + result.name + '</strong>');
+                  }
+                })
+                .catch(function() {
+                  document.getElementById("sheet").innerHTML = "Error in listSheet function";
+                });
+              }
     </script>
   </head>
   <body>
@@ -50,6 +99,7 @@
         // feednami doesn't like & so replace with %26
         var replacedURL = origURL.replace(/&/g, "%26");
         feednami.load(replacedURL,function(result) {
+          if (result.error) {
             console.log(result.error);
           } else {
             var entries = result.feed.entries
