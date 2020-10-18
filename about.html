@@ -9,13 +9,11 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 
 <script>
-
-    <script>
       window.onload = function() {
         // functions that run after page loads
         displayGreeting();
         fetchWeather(85719);
-        function displayRSSFeed();
+        displayRSSFeed();
         var mymap = drawMap();
         listSheet(mymap);
       }
@@ -32,6 +30,25 @@
    }).addTo(mymap);
    return mymap;
  }
+
+ function displayRSSFeed() {
+     // fetch an RSS feed and display the title and description
+     var origURL = 'https://tucson.com/search/?f=rss%26t=article&c=news/national&l=25&s=start_time&sd=desc';
+     // feednami doesn't like & so replace with %26
+     var replacedURL = origURL.replace(/&/g, "%26");
+     feednami.load(replacedURL,function(result) {
+       if (result.error) {
+         console.log(result.error);
+       } else {
+         var entries = result.feed.entries
+         for (var i = 0; i < entries.length; i++) {
+           var entry = entries[i];
+           let divElement = '<div class="rss_title"><a href="' + entry.link + '" target="_blank">' + entry.title + '</a></div><div class="rss_description">' + entry.description + '</div>';
+           document.getElementById("rss_items").innerHTML += divElement;
+         }
+       }
+     });
+   }
 
  function addPin(mymap, lat, lon, name) {
  // add a pin to mymap at lat, lon with a popup
@@ -93,25 +110,6 @@
     <div id="greeting"></div>
    <div id="weather"></div>
 
-    function displayRSSFeed() {
-        // fetch an RSS feed and display the title and description
-        var origURL = 'https://tucson.com/search/?f=rss%26t=article&c=news/national&l=25&s=start_time&sd=desc';
-        // feednami doesn't like & so replace with %26
-        var replacedURL = origURL.replace(/&/g, "%26");
-        feednami.load(replacedURL,function(result) {
-          if (result.error) {
-            console.log(result.error);
-          } else {
-            var entries = result.feed.entries
-            for (var i = 0; i < entries.length; i++) {
-              var entry = entries[i];
-              let divElement = '<div class="rss_title"><a href="' + entry.link + '" target="_blank">' + entry.title + '</a></div><div class="rss_description">' + entry.description + '</div>';
-              document.getElementById("rss_items").innerHTML += divElement;
-            }
-          }
-        });
-      }
-
 
 <center>
     <div class="name_container">Lisa Urban</div>
@@ -135,12 +133,12 @@
 <div class="clear"></div>
           <center><div class="news_container">
           <div class="newstitle">News Sites</div><center/>
-          <div class="newssite"><a href="https://www.wsj.com" Target="_blank">The Wall Street Journal</a></div>
-          <div class="newssite"><a href="https://www.huffpost.com" Target="_blank">Huffington Post</a></div>
-          <div class="newssite"><a href="http://nytimes.com" Target="_blank">New York Times</a></div>
-          <div class="newssite"><a href="https://www.theguardian.com/us" Target="_blank">The Guardian</a></div>
-          <div class="newssite"><a href="https://www.npr.org" Target="_blank">NPR</a></div>
-          <div class="newssite"><a href="http://www.washingtonpost.com" Target="_blank">The Washington Post</a></div>
+          <div class="newssite"><a href="https://www.wsj.com" target="_blank">The Wall Street Journal</a></div>
+          <div class="newssite"><a href="https://www.huffpost.com" target="_blank">Huffington Post</a></div>
+          <div class="newssite"><a href="http://nytimes.com" target="_blank">New York Times</a></div>
+          <div class="newssite"><a href="https://www.theguardian.com/us" target="_blank">The Guardian</a></div>
+          <div class="newssite"><a href="https://www.npr.org" target="_blank">NPR</a></div>
+          <div class="newssite"><a href="http://www.washingtonpost.com" target="_blank">The Washington Post</a></div>
 
 
 
