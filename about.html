@@ -14,9 +14,32 @@
         displayGreeting();
         fetchWeather(85719);
         displayRSSFeed();
+        listSheet();
         var mymap = drawMap();
-        listSheet(mymap);
+
       }
+      function listSheet() {
+            // list google sheet rows
+            fetch('https://api.sheetson.com/v2/sheets/Sheet1', {
+              withCredentials: true,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer yhlqlTHe_P-iim2XsIcSsKymph2sCxbx960ISNkpapPkZ9nHWgbF_9HwWF870A',
+                'X-Sheetson-Spreadsheet-Id': '15_Ya_xFF03VEEVzXa4nsrY3efJ3aHFA9k7PCQ7jOPBM'
+              }
+            })
+            .then(function(resp) { return resp.json() })
+            .then(function(data) {
+              for (var i = 0; i < data.results.length; i++) {
+                var result = data.results[i];
+                let divElement = '<div class="cell">' + '<div class="cell_name">' + result.name + '</div>' + '<div class="cell_address">' + result.address + '</div>' + '<div class="cell_url"><a href="' + result.url + '">' + result.url + '</a></div>' + '<div class="cell_phone"><a href="tel://' + result.phone + '">' + result.phone + '</a></div>' + '</div>';
+                document.getElementById("sheet").innerHTML += divElement;
+              }
+            })
+            .catch(function() {
+              document.getElementById("sheet").innerHTML = "Error in listSheet function";
+            });
+          }
       function drawMap() {
    // draw a map using leafletjs and tiles from mapbox
    var mymap = L.map('mapid').setView([32.2264836, -110.9498551], 12);
@@ -49,11 +72,6 @@
        }
      });
    }
-
- function addPin(mymap, lat, lon, name) {
- // add a pin to mymap at lat, lon with a popup
- L.marker([lat, lon]).addTo(mymap).bindPopup(name);
-}
       // display good morning, afternoon or evening based on the time
       function displayGreeting() {
         var date = new Date();
@@ -79,37 +97,16 @@
           document.getElementById("weather").innerHTML = "Error in fetch Weather function";
         });
       }
-      function listSheet(sheet1) {
-            // list google sheet rows
-                fetch('https://api.sheetson.com/v2/sheets/Sheet1', {
-                  withCredentials: true,
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer yhlqlTHe_P-iim2XsIcSsKymph2sCxbx960ISNkpapPkZ9nHWgbF_9HwWF870A',
-                    'X-Sheetson-Spreadsheet-Id': '5_Ya_xFF03VEEVzXa4nsrY3efJ3aHFA9k7PCQ7jOPBM'
-                  }
-                })
-                .then(function(resp) { return resp.json() })
-                .then(function(data) {
-                  for (var i = 0; i < data.results.length; i++) {
-                    var result = data.results[i];
-                    let divElement = '<div class="cell">' + '<div class="cell_name">' + result.name + '</div>' + '<div class="cell_address">' + result.address + '</div>' + '<div class="cell_url"><a href="' + result.url + '">' + result.url + '</a></div>' + '<div class="cell_phone">' + result.phone + '</div>' + '</div>';
-                    document.getElementById("sheet").innerHTML += divElement;
-
-                    addPin(mymap, result.lat, result.lon, '<strong>' + result.name + '</strong>');
-                  }
-                })
-                .catch(function() {
-                  document.getElementById("sheet").innerHTML = "Error in listSheet function";
-                });
-              }
     </script>
   </head>
   <body>
 
-    <div id="greeting"></div>
+   <div id="greeting"></div>
    <div id="weather"></div>
    <div id="rss_items"></div>
+
+   <h2>Covid 19 Testing Locations</h2>
+    <div id="sheet"></div>
 
 
 <center>
