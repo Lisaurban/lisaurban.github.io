@@ -3,7 +3,7 @@
   <head>
     <title>About Me</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://storage.googleapis.com/feednami-static/js/feednami-client-v1.0.1.js"></script>
+  <script src="https://storage.googleapis.com/feednami-static/js/feednami-client-v1.0.1.js"></script>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
@@ -33,7 +33,7 @@
 
  function displayRSSFeed() {
      // fetch an RSS feed and display the title and description
-     var origURL = 'https://tucson.com/search/?f=rss%26t=article&c=news/national&l=25&s=start_time&sd=desc';
+     var origURL = 'https://tucson.com/search/?f=rss&t=article&c=news/local&l=25&s=start_time&sd=desc';
      // feednami doesn't like & so replace with %26
      var replacedURL = origURL.replace(/&/g, "%26");
      feednami.load(replacedURL,function(result) {
@@ -79,7 +79,7 @@
           document.getElementById("weather").innerHTML = "Error in fetch Weather function";
         });
       }
-      function listSheet(mymap) {
+      function listSheet(sheet1) {
             // list google sheet rows
                 fetch('https://api.sheetson.com/v2/sheets/Sheet1', {
                   withCredentials: true,
@@ -109,6 +109,7 @@
 
     <div id="greeting"></div>
    <div id="weather"></div>
+   <div id="rss_items"></div>
 
 
 <center>
